@@ -36,11 +36,9 @@ function show_modal_window(schedule) {
 
     //if no valid courses
     if(Object.keys(departs).length == 0) {
-        $('#course_pool').css('transition', '200ms');
-        $('#course_pool').css('background-color', '#ffcdd2');
+        $('#course_pool').css('transition', '200ms').css('background-color', '#ffcdd2');
         setTimeout(function(){
-            $('#course_pool').css('transition', '200ms');
-            $('#course_pool').css('background-color', 'transparent');
+            $('#course_pool').css('transition', '200ms').css('background-color', 'transparent');
         }, 200);
         return;
     }
@@ -138,7 +136,7 @@ function show_modal_window(schedule) {
             window.open('print_page.html');
         });
     }
-    $('[data-remodal-id=result_modal]').remodal().open();
+    $('[data-remodal-id=result_modal]').remodal({hashTracking: false}).open();
 
     tableLoaded=true;
 }
@@ -272,10 +270,24 @@ function on_schedule_loaded(schedule) {
 
     //modal window event
     {
-        $('#course_pool_confirm').click(function () { show_modal_window(schedule) });
-        key('ctrl+enter', function () {
-            if ($('#course_pool').is(':focus')) show_modal_window(schedule);
+        $('#course_pool_confirm').click(function () {
+            var classes = $('#course_pool').val();
+            location.hash = classes;
+            show_modal_window(schedule, classes.split(','))
         });
+        key('ctrl+enter', function () {
+            var pool = $('#course_pool');
+            if (pool.is(':focus')) {
+                var classes = pool.val();
+                location.hash = classes;
+                show_modal_window(schedule, classes.split(','))
+            }
+        });
+        if(location.hash !== ""){
+            var classes = location.hash.substring(1);
+            $('#course_pool').val(classes);
+            show_modal_window(schedule, classes.split(','));
+        }
         key.filter = ev => true;
     }
 }
